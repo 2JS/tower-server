@@ -53,6 +53,8 @@ void handleMove(char direction){
   while(true){
     // set stepper rotation
     // if incomingDIR information exist, use that information.
+    stepper.startRotate(360);
+    /*
     if(incomingDIR == '0'){
       if(direction == '+'){
         stepper.startRotate(360);
@@ -66,31 +68,37 @@ void handleMove(char direction){
         stepper.startRotate(-360);
       }
     }
+    */
    
    // pulse generation
    while(true){
      // command checking
-    if(Serial.available() > 0) {
-      String incomingString = Serial.readStringUntil('\n');
-      if(incomingString.equals("stop")){ // stop command
-        stepper.stop();
-        return;
-      }else{ // speed command (changes speed)
-        int clength = incomingString.length();
-        double incomingRPM = incomingString.toDouble();
-        incomingDIR = incomingString[clength-1];
-        stepper.setRPM(incomingRPM);
-        break;
-      }
-    }
+    
     long wait_time_micros = stepper.nextAction();
     if(wait_time_micros){
-      Serial.print("  dt="); Serial.print(wait_time_micros);
-      Serial.print("  rpm="); Serial.print(stepper.getCurrentRPM());
-      Serial.println();
+      //int temp1 = micros();
+      //Serial.print("  dt="); Serial.print(wait_time_micros);
+      //Serial.print("  rpm="); Serial.print(stepper.getCurrentRPM());
+      if(Serial.available() > 0) {
+        String incomingString = Serial.readStringUntil('\n');
+        if(incomingString.equals("stop")){ // stop command
+          stepper.stop();
+          return;
+        }else{ // speed command (changes speed)
+          int clength = incomingString.length();
+          double incomingRPM = incomingString.toDouble();
+          incomingDIR = incomingString[clength-1];
+          stepper.setRPM(incomingRPM);
+          break;
+        }
+      }
+      
+      //int temp2 = micros();
+      //Serial.print("  total time="); Serial.println(temp2-temp1);
     }else{
       // the last action
       // delay for next iteration, delay must be different for currentRPM.
+      //Serial.println("here");
       stepper.delayMicros(stepper.getTimeForMove(1));
       break;
     }
@@ -120,11 +128,11 @@ void handleSerial(){
     switch(incomingDir){
       case '+':
         Serial.println("cw");
-        handleMove(360); // this is a non-blocking function
+        handleMove('+'); // this is a non-blocking function
         break;
       case '-':
         Serial.println("ccw");
-        handleMove(-360);
+        handleMove('-');
         break;
     }
   }
