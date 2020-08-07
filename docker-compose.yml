@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+    db:
+        image: mongo:4.2
+        restart: unless-stopped
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: superuser
+            MONGO_INITDB_ROOT_PASSWORD: 1234
+    
+    app:
+        image: lego3410/tower-server:latest
+        build: .
+        restart: unless-stopped
+        command: npm start
+        ports:
+        - "3010:3010"
+        labels:
+        - "traefik.docker.network=default"
+    
+    # proxy:
+    #     image: traefik:v2.2
+    #     restart: always
+        
