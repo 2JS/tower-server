@@ -7,7 +7,23 @@ services:
         environment:
             MONGO_INITDB_ROOT_USERNAME: superuser
             MONGO_INITDB_ROOT_PASSWORD: 1234
+            MONGO_INITDB_DATABASE: tower
     
+    mongoexpress:
+        image: mongo-express
+        ports:
+        - 8081:8081
+        environment:
+            ME_CONFIG_MONGODB_SERVER: db
+            ME_CONFIG_MONGODB_AUTH_DATABASE: tower
+            ME_CONFIG_MONGODB_AUTH_USERNAME: superuser
+            ME_CONFIG_MONGODB_AUTH_PASSWORD: 1234
+            # ME_CONFIG_BASICAUTH_USERNAME: test
+            # ME_CONFIG_BASICAUTH_PASSWORD: test
+            ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+            ME_CONFIG_MONGODB_ADMINUSERNAME: superuser
+            ME_CONFIG_MONGODB_ADMINPASSWORD: 1234
+
     app:
         image: lego3410/tower-server:latest
         build: .
